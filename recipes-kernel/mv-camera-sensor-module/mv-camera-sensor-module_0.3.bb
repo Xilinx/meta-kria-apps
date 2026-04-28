@@ -20,3 +20,4 @@ inherit module
 
 INHIBIT_PACKAGE_STRIP = "1"
 
+RDEPENDS:${PN} += "kernel-module-imx547"

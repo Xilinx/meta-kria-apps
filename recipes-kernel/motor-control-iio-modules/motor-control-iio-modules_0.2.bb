@@ -21,3 +21,14 @@ inherit module
 
 INHIBIT_PACKAGE_STRIP = "1"
 
+# The kernel-module-split bbclass produces one package per .ko under names
+# like kernel-module-<basename>. Pull all of them in via the recipe wrapper
+# so listing 'motor-control-iio-modules' in IMAGE_INSTALL / CONTAINER_APP
+# is enough to install the full driver set.
+RDEPENDS:${PN} += " \
+    kernel-module-xilinx-adc-hub \
+    kernel-module-hls-foc-periodic \
+    kernel-module-hls-pwm-gen \
+    kernel-module-hls-qei-axi \
+    kernel-module-hls-svpwm-duty \
+"

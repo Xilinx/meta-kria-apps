@@ -23,3 +23,4 @@ inherit module
 
 INHIBIT_PACKAGE_STRIP = "1"
 
+RDEPENDS:${PN} += "kernel-module-ar1335"
