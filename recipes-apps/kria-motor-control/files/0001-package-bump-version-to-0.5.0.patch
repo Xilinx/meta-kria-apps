@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Pallav Joshi <pallav.joshi@amd.com>
+Date: Tue, 29 Apr 2026 00:00:00 -0700
+Subject: [PATCH] kria_motor_control: bump package.xml version to 0.5.0
+
+The ament package.xml was left at 0.4.0 when the upstream foc-motor-ctrl
+repository was tagged v0.5. Carry a local bump so that PV in the recipe
+matches what ROS reports at runtime. Drop this patch once upstream
+rolls a v0.5.x release with the corrected version.
+
+Upstream-Status: Pending
+Signed-off-by: Pallav Joshi <pallav.joshi@amd.com>
+---
+ test/ros2_canopen/package.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/ros2_canopen/package.xml b/test/ros2_canopen/package.xml
+index f374d02..7f4da9f 100644
+--- a/test/ros2_canopen/package.xml
++++ b/test/ros2_canopen/package.xml
+@@ -2,7 +2,7 @@
+ <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+ <package format="3">
+   <name>kria_motor_control</name>
+-  <version>0.4.0</version>
++  <version>0.5.0</version>
+   <description>Example package to demontrate access to Kria FOC Motor over canopen</description>
+   <maintainer email="pallav.joshi@amd.com">pallav</maintainer>
+   <license>MIT</license>
