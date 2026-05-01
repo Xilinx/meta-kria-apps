@@ -8,7 +8,7 @@ modules required by the FOC server / Bokeh dashboard. The userspace \
 server (foc-motor-ctrl + dashboard) will be added via a bbappend in a \
 follow-up."
 
-require recipes-extended/images/container-app-base.bb
+require recipes-containers/kria-app-container.inc
 
 CONTAINER_SHELL = "bash"
 CONTAINER_APP_CMD = "bash"

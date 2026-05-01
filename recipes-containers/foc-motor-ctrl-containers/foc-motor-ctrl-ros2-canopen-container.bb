@@ -8,7 +8,7 @@ host/client against a KD240 server. Bundles the kr260-tsn-rs485pmod \
 firmware overlay used for the CAN/RS485 PMOD on KR260; the userspace \
 ROS2 stack will be added via a bbappend in a follow-up."
 
-require recipes-extended/images/container-app-base.bb
+require recipes-containers/kria-app-container.inc
 
 CONTAINER_SHELL = "bash"
 CONTAINER_APP_CMD = "bash"

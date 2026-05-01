@@ -7,7 +7,7 @@ kernel modules required to run the Kria Built-In Self-Test (BIST) suite \
 across KD240, KR260 and KV260. Userspace BIST tooling will be added via \
 a bbappend in a follow-up."
 
-require recipes-extended/images/container-app-base.bb
+require recipes-containers/kria-app-container.inc
 
 # Userspace entrypoint is a placeholder; the actual BIST CLI will be set
 # once the kria-bist app recipe is integrated.
