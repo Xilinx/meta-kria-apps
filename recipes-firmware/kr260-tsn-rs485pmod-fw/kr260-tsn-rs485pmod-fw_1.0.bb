@@ -31,3 +31,11 @@ do_install() {
 }
 
 FILES:${PN} = "${nonarch_base_libdir}/firmware/xilinx/${FW_NAME}"
+
+# In-tree =m modules referenced by the kr260-tsn-rs485pmod DT overlay
+# (see recipes-firmware/module-dependencies.md). The TSN driver itself is
+# built into the kernel (CONFIG_XILINX_TSN=y), so no TSN module is listed.
+RDEPENDS:${PN} += " \
+    kernel-module-uio-pdrv-genirq \
+    kernel-module-mcp251x \
+"

@@ -31,3 +31,11 @@ do_install() {
 }
 
 FILES:${PN} = "${nonarch_base_libdir}/firmware/xilinx/${FW_NAME}"
+
+# Out-of-tree IIO drivers and in-tree =m modules referenced by the
+# kd240-motor-ctrl-qei DT overlay (see recipes-firmware/module-dependencies.md).
+RDEPENDS:${PN} += " \
+    motor-control-iio-modules \
+    kernel-module-uio-pdrv-genirq \
+    kernel-module-amd-axi-w1 \
+"

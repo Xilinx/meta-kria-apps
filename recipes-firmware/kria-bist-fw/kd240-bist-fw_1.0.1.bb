@@ -8,3 +8,11 @@ require kria-bist-fw.inc
 FW_NAME = "kd240-bist"
 
 SRC_URI[sha256sum] = "746cb3d6cdd32a5e850094b4304557ba87e3b2046bb6061a347f14803517f678"
+
+# Out-of-tree IIO drivers and in-tree =m modules referenced by the
+# kd240-bist DT overlay (see recipes-firmware/module-dependencies.md).
+RDEPENDS:${PN} += " \
+    motor-control-iio-modules \
+    kernel-module-uio-pdrv-genirq \
+    kernel-module-mcp251x \
+"
