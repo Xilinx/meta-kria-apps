@@ -16,5 +16,6 @@ KRIA_CONTAINER_BASE_INSTALL = " \
     packagegroup-core-base-utils \
     dfx-mgr-client \
     iproute2 \
+    dfx-fw-install \
 "
 IMAGE_INSTALL:append = " ${KRIA_CONTAINER_BASE_INSTALL}"
