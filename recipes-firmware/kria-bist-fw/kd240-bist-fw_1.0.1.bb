@@ -16,3 +16,8 @@ RDEPENDS:${PN} += " \
     kernel-module-uio-pdrv-genirq \
     kernel-module-mcp251x \
 "
+
+# Modules to load for the kd240-bist overlay (matches the dtsi audit in
+# recipes-firmware/module-dependencies.md). uio_pdrv_genirq must come
+# first so the generic-uio nodes can bind once the overlay is loaded.
+KRIA_FW_MODULES = "uio_pdrv_genirq mcp251x xilinx-adc-hub hls-foc-periodic hls-pwm-gen hls-qei-axi hls-svpwm-duty"

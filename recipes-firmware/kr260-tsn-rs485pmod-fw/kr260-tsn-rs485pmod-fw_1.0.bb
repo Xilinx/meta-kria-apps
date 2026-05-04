@@ -39,3 +39,11 @@ RDEPENDS:${PN} += " \
     kernel-module-uio-pdrv-genirq \
     kernel-module-mcp251x \
 "
+
+# Modules to load for the kr260-tsn-rs485pmod overlay. uio_pdrv_genirq
+# must come first so generic-uio nodes can bind, then mcp251x drives
+# the SPI-attached MCP25625 CAN transceiver on the PMOD. TSN, axi-mcdma,
+# uartlite, spi-xilinx and xps-intc are =y in the kernel.
+KRIA_FW_MODULES = "uio_pdrv_genirq mcp251x"
+
+require ../kria-fw-modules-load.inc

@@ -34,3 +34,9 @@ do_install() {
 }
 
 FILES:${PN} = "${nonarch_base_libdir}/firmware/xilinx/${FW_NAME}"
+
+# Per-overlay kernel-module load list (consumed by kria-modules-load
+# inside the BIST containers, or systemd-modules-load.service on a
+# systemd host). Each per-board recipe sets KRIA_FW_MODULES with the
+# module basenames its dtbo nodes bind against.
+require ../kria-fw-modules-load.inc

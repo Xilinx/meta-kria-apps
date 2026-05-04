@@ -16,3 +16,10 @@ RDEPENDS:${PN} += " \
     kernel-module-ap1302 \
     kernel-module-xlnx-vcu \
 "
+
+# Modules to load for the kv260-bist overlay. ap1302 (the on-board ISP)
+# must be loaded before ar1335 so the ar1335 sensor binding finds the
+# upstream ISP. xlnx_vcu drives the VCU encode/decode IP. Other video
+# drivers (csi2rxss, demosaic, vpss-scaler, frmbuf, i2c-mux-pca954x,
+# i2c-xiic, gpio-xilinx, imx219) are =y in the kernel.
+KRIA_FW_MODULES = "ap1302 ar1335 xlnx_vcu"

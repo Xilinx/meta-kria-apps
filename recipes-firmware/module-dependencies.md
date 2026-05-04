@@ -160,6 +160,50 @@ In-tree modules built as `=m` to add via `RDEPENDS:${PN}` (so the
 Everything not listed above is built into the kernel image (`=y`) and needs
 no recipe-level dependency.
 
+## Module load order (modules-load.d)
+
+Each `*-fw` recipe ships a `/usr/lib/modules-load.d/<FW_NAME>.conf`
+listing the kernel modules its DT overlay binds against, in dependency
+order. The list lives next to the firmware blob so a single source of
+truth (`KRIA_FW_MODULES` in the recipe) drives both the RDEPENDS and the
+runtime load list. Inside our OCI containers, the `kria-modules-load`
+helper from `recipes-utils/kria-modules-load` reads the conf and
+modprobes each module before `dfx-mgr-client -load <fw>`. On a systemd
+host, `systemd-modules-load.service` would consume the same file
+verbatim.
+
+| firmware recipe | modules-load.d entries (in load order) |
+|---|---|
+| `kd240-bist-fw` | `uio_pdrv_genirq mcp251x xilinx-adc-hub hls-foc-periodic hls-pwm-gen hls-qei-axi hls-svpwm-duty` |
+| `kd240-motor-ctrl-qei-fw` | `uio_pdrv_genirq amd_axi_w1 xilinx-adc-hub hls-foc-periodic hls-pwm-gen hls-qei-axi hls-svpwm-duty` |
+| `kr260-bist-fw` | `imx547` |
+| `kr260-tsn-rs485pmod-fw` | `uio_pdrv_genirq mcp251x` |
+| `kv260-bist-fw` | `ap1302 ar1335 xlnx_vcu` |
+
+Drivers built into the kernel (`=y`) do not appear in these lists -
+they are always present, no modprobe required. If a future kernel
+reconfig moves any of those `=y` symbols to `=m`, the corresponding
+module name must be added to the matching conf list (and to the
+`KRIA_FW_MODULES` var in the recipe).
+
+Suggested host invocation pattern:
+
+```
+FW_NAME=kd240-bist
+sudo mkdir -p /lib/firmware/xilinx/${FW_NAME}
+docker run --rm --privileged \
+    -v /lib/firmware/xilinx/${FW_NAME}:/opt/firmware/xilinx/${FW_NAME} \
+    <image> sh -c "
+        dfx-fw-install     --fw-name ${FW_NAME} &&
+        kria-modules-load  --fw-name ${FW_NAME}
+    "
+sudo dfx-mgr-client -load ${FW_NAME}
+```
+
+`--privileged` is required for `kria-modules-load` because it shares
+the host kernel and modprobe needs CAP_SYS_MODULE. `dfx-fw-install`
+by itself does not need `--privileged`.
+
 ## Kernel config gaps to raise upstream / fix in a kernel bbappend
 
 These would otherwise cause silent runtime failures:
