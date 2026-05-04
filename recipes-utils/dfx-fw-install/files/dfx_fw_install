@@ -13,31 +13,37 @@
 #       <image> dfx_fw_install --fw-name ${FW_NAME}
 #
 # Defaults:
-#   --src  /lib/firmware/xilinx/<fw-name>      (container path)
-#   --host-dir /opt/firmware/xilinx/<fw-name>  (bind-mounted from host)
+#   --src  /lib/firmware/xilinx/<fw-name>   (container path)
+#   --dest /opt/firmware/xilinx/<fw-name>   (bind-mounted from host)
 
 set -eu
 
 FW_NAME=""
 SRC=""
 DEST=""
-FORCE=0
+NO_CLOBBER=0
 LIST=0
 DRY_RUN=0
 
 print_usage() {
     cat <<EOF
-Usage: $0 --fw-name <name> [--src <src-dir>] [--host-dir <dest-dir>]
-                          [--force] [--list] [--dry-run]
+Usage: $0 --fw-name <name> [--src <src-dir>] [--dest|--host-dir <dest-dir>]
+                          [--no-clobber] [--list] [--dry-run]
 
 Options:
   --fw-name NAME    Firmware name (required). Defaults:
-                      src       = /lib/firmware/xilinx/NAME
-                      host-dir  = /opt/firmware/xilinx/NAME
+                      src   = /lib/firmware/xilinx/NAME
+                      dest  = /opt/firmware/xilinx/NAME
   --src DIR         Override the container source directory.
-  --host-dir DIR    Override the (bind-mounted) destination directory.
-  --force           Overwrite existing files in the destination.
-                    Without --force, existing files are kept untouched.
+  --dest DIR        Override the (bind-mounted) destination directory.
+                    --host-dir is accepted as an alias for --dest.
+                    The directory must already exist; the script does
+                    not create it (this is by design, so a missing
+                    bind mount is reported instead of silently writing
+                    into the container's overlay filesystem).
+  --no-clobber      Keep existing files in the destination untouched.
+                    The default is to overwrite changed files (rsync
+                    -c, content-based diff).
   --list            Print the files that would be installed and exit.
   --dry-run         Run rsync in dry-run mode and exit (no writes).
   -h, --help        Show this help message.
@@ -57,10 +63,10 @@ while [ $# -gt 0 ]; do
         --src)
             shift; [ $# -gt 0 ] || error "--src requires an argument"
             SRC="$1" ;;
-        --host-dir|--dest)
-            shift; [ $# -gt 0 ] || error "--host-dir requires an argument"
+        --dest|--host-dir)
+            shift; [ $# -gt 0 ] || error "--dest requires an argument"
             DEST="$1" ;;
-        --force)   FORCE=1 ;;
+        --no-clobber) NO_CLOBBER=1 ;;
         --list)    LIST=1 ;;
         --dry-run) DRY_RUN=1 ;;
         -h|--help) print_usage; exit 0 ;;
@@ -82,8 +88,8 @@ esac
 [ -n "$DEST" ] || DEST="/opt/firmware/xilinx/${FW_NAME}"
 
 echo "dfx_fw_install: fw-name='${FW_NAME}'"
-echo "  src     : ${SRC}"
-echo "  host-dir: ${DEST}"
+echo "  src : ${SRC}"
+echo "  dest: ${DEST}"
 
 [ -d "$SRC" ] || error "source directory '${SRC}' does not exist"
 if ! find "$SRC" -mindepth 1 -maxdepth 1 -print -quit | grep -q .; then
@@ -96,35 +102,30 @@ if [ "$LIST" -eq 1 ]; then
     exit 0
 fi
 
+# Refuse to create the destination ourselves. If --dest does not exist,
+# the most likely cause is a missing -v bind mount; silently creating it
+# would write the firmware into the container's overlay where the host's
+# dfx-mgr cannot see it.
+[ -d "$DEST" ] || error "destination directory '${DEST}' does not exist; create it on the host and bind-mount it into the container"
+
+if ! mountpoint -q "$DEST" 2>/dev/null; then
+    echo "WARNING: '${DEST}' is not a bind mount; copy will land inside the"
+    echo "         container's writable layer and be lost when it exits."
+fi
+
 # rsync flags:
 #   -a       archive (perms, timestamps, symlinks)
+#   -c       checksum-based diff so we only rewrite files whose content
+#            actually changed (mtimes get reset on every container build)
 #   --info=stats1,progress0
 #            print a small summary, no per-file noise
-#   --ignore-existing  refuse to overwrite (safe by default)
-#   -c       checksum-based when --force is in play, so we only rewrite
-#            files whose content actually changed
-RSYNC_OPTS="-a --info=stats1,progress0"
-if [ "$FORCE" -eq 1 ]; then
-    # Drop --ignore-existing, add -c so we only rewrite changed files.
-    RSYNC_OPTS="${RSYNC_OPTS} -c"
-else
+#   --ignore-existing  keep existing files untouched (with --no-clobber)
+RSYNC_OPTS="-a -c --info=stats1,progress0"
+if [ "$NO_CLOBBER" -eq 1 ]; then
     RSYNC_OPTS="${RSYNC_OPTS} --ignore-existing"
 fi
 if [ "$DRY_RUN" -eq 1 ]; then
     RSYNC_OPTS="${RSYNC_OPTS} --dry-run"
-fi
-
-# Ensure the destination exists. If --host-dir was bind-mounted, this is a
-# no-op; if it wasn't, we land in the OCI overlay (visible only inside the
-# container). Print a clear note so the user notices when they forgot the
-# bind mount.
-if [ ! -d "$DEST" ]; then
-    echo "Destination '${DEST}' does not exist; creating it."
-    mkdir -p "$DEST"
-fi
-if ! mountpoint -q "$DEST" 2>/dev/null; then
-    echo "WARNING: '${DEST}' is not a bind mount; copy will land inside the"
-    echo "         container's writable layer and be lost when it exits."
 fi
 
 # Trailing slash on src so we copy *contents*, not the directory itself.
