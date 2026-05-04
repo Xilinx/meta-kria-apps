@@ -68,7 +68,7 @@ Source: `kria-vitis-platforms-internal/kr260/platforms/kr260_bist/dtsi/kr260-bis
 
 | compatible | driver / module | Kernel status | Recipe RDEPENDS |
 |---|---|---|---|
-| `framos,imx547` | imx547 | OOT (build WIP) | `mv-camera-sensor-module` |
+| `framos,imx547` | imx547 | OOT (`mv-camera-sensor-module`) | `mv-camera-sensor-module` |
 | `xlnx,axi-iic-2.1` | i2c-xiic | Y (CONFIG_I2C_XILINX=y) | none |
 | `xlnx,xxv-ethernet-4.1` | xilinx_axienet (XXV path) | Y (CONFIG_XILINX_AXI_EMAC=y) | none |
 | `xlnx,axi-ethernet-7.2` / `xlnx,eth-dma` | xilinx_axienet | Y | none |
@@ -140,7 +140,7 @@ means the overlay will not bind):
 |---|---|
 | `kd240-bist-fw` | `motor-control-iio-modules` |
 | `kd240-motor-ctrl-qei-fw` | `motor-control-iio-modules` |
-| `kr260-bist-fw` | `mv-camera-sensor-module` (deferred until recipe builds) |
+| `kr260-bist-fw` | `mv-camera-sensor-module` |
 | `kr260-tsn-rs485pmod-fw` | none (TSN driver is `=y` in kernel) |
 | `kr260-pmod-gps-fw` | none |
 | `kv260-bist-fw` | `ar1335-module` |
@@ -152,7 +152,7 @@ In-tree modules built as `=m` to add via `RDEPENDS:${PN}` (so the
 |---|---|
 | `kd240-bist-fw` | `kernel-module-uio-pdrv-genirq kernel-module-mcp251x` |
 | `kd240-motor-ctrl-qei-fw` | `kernel-module-uio-pdrv-genirq kernel-module-amd-axi-w1` |
-| `kr260-bist-fw` | none |
+| `kr260-bist-fw` | none (only the OOT `mv-camera-sensor-module` is needed) |
 | `kr260-tsn-rs485pmod-fw` | `kernel-module-uio-pdrv-genirq kernel-module-mcp251x` |
 | `kr260-pmod-gps-fw` | `kernel-module-pps-gpio` |
 | `kv260-bist-fw` | `kernel-module-ap1302 kernel-module-xlnx-vcu` |
@@ -189,10 +189,9 @@ These would otherwise cause silent runtime failures:
    `kr260-tsn-rs485pmod-fw` recipe needs no TSN module RDEPENDS. If a
    future kernel reconfig moves these to `=m`, this analysis must be
    re-run.
-2. `mv-camera-sensor-module` is currently `do_compile`-failing on kernel
-   6.18 API breakage (no upstream PR). KR260 BIST overlay will load but
-   the IMX547 sensor node will not bind. Track as a known limitation
-   alongside any RDEPENDS we add.
+2. `mv-camera-sensor-module` is built and packaged
+   (`kernel-module-imx547`); the KR260 BIST overlay binds the IMX547
+   sensor node via this driver.
 3. The currently shipped `kr260-bist.dtbo` has the gpio node commented
    out (per the internal repo dts) as a temporary workaround. Once the
    workaround is replaced with the upstream-fixed dtbo that re-introduces
