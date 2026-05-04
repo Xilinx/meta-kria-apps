@@ -2,7 +2,7 @@
 # Copyright (C) 2026 Advanced Micro Devices, Inc.
 
 SUMMARY = "Helper to copy a Kria firmware directory out of an OCI container onto the host"
-DESCRIPTION = "dfx_fw_install runs inside a Kria app OCI container and \
+DESCRIPTION = "dfx-fw-install runs inside a Kria app OCI container and \
 rsyncs /lib/firmware/xilinx/<fw-name>/ contents into a bind-mounted host \
 directory. Required because the host's dfx-mgr daemon can only load \
 firmware from host-visible paths under /lib/firmware/xilinx/."
@@ -11,7 +11,7 @@ SECTION = "utils"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-SRC_URI = "file://dfx_fw_install"
+SRC_URI = "file://dfx-fw-install"
 
 S = "${WORKDIR}"
 
@@ -23,7 +23,7 @@ RDEPENDS:${PN} = "rsync coreutils"
 
 do_install() {
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/dfx_fw_install ${D}${bindir}/dfx_fw_install
+    install -m 0755 ${WORKDIR}/dfx-fw-install ${D}${bindir}/dfx-fw-install
 }
 
-FILES:${PN} = "${bindir}/dfx_fw_install"
+FILES:${PN} = "${bindir}/dfx-fw-install"

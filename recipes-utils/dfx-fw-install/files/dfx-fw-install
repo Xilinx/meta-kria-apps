@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# dfx_fw_install
+# dfx-fw-install
 #
 # Copy a single Kria/DFX firmware directory from inside an OCI container
 # onto a bind-mounted host directory so that the host's dfx-mgr daemon can
@@ -10,7 +10,7 @@
 #   sudo mkdir -p /lib/firmware/xilinx/${FW_NAME}
 #   docker run --rm \
 #       -v /lib/firmware/xilinx/${FW_NAME}:/opt/firmware/xilinx/${FW_NAME} \
-#       <image> dfx_fw_install --fw-name ${FW_NAME}
+#       <image> dfx-fw-install --fw-name ${FW_NAME}
 #
 # Defaults:
 #   --src  /lib/firmware/xilinx/<fw-name>   (container path)
@@ -87,7 +87,7 @@ esac
 [ -n "$SRC" ]  || SRC="/lib/firmware/xilinx/${FW_NAME}"
 [ -n "$DEST" ] || DEST="/opt/firmware/xilinx/${FW_NAME}"
 
-echo "dfx_fw_install: fw-name='${FW_NAME}'"
+echo "dfx-fw-install: fw-name='${FW_NAME}'"
 echo "  src : ${SRC}"
 echo "  dest: ${DEST}"
 
@@ -137,4 +137,4 @@ if [ "$DRY_RUN" -ne 1 ]; then
     sync -f "${DEST}" 2>/dev/null || sync
 fi
 
-echo "dfx_fw_install: done."
+echo "dfx-fw-install: done."
