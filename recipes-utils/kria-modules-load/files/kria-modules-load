@@ -1,0 +1,118 @@
+#!/bin/sh
+#
+# kria-modules-load
+#
+# Load (or unload) the kernel modules a Kria firmware overlay depends
+# on, by reading /usr/lib/modules-load.d/<fw-name>.conf inside the
+# OCI container. The conf file is shipped by the matching *-fw recipe
+# in meta-kria-apps and follows systemd-modules-load.d(5) syntax (one
+# module basename per line, '#' comments).
+#
+# Designed to be run before xmutil/dfx-mgr-client loads the bitstream
+# + dtbo, so the kernel has the matching drivers registered when the
+# overlay's OF nodes appear:
+#
+#   dfx-fw-install --fw-name kd240-bist
+#   kria-modules-load --fw-name kd240-bist
+#   dfx-mgr-client -load kd240-bist
+#
+# Defaults:
+#   --conf /usr/lib/modules-load.d/<fw-name>.conf
+
+set -eu
+
+FW_NAME=""
+CONF=""
+ACTION="load"
+VERBOSE=0
+
+print_usage() {
+    cat <<EOF
+Usage: $0 --fw-name <name> [--conf <file>] [--list] [--unload] [-v]
+
+Options:
+  --fw-name NAME    Firmware name (required). Defaults:
+                      conf = /usr/lib/modules-load.d/NAME.conf
+  --conf FILE       Override the conf file path.
+  --list            Print the resolved module list and exit.
+  --unload          rmmod the modules in reverse order.
+  -v, --verbose     Echo each modprobe/rmmod command.
+  -h, --help        Show this help message.
+EOF
+}
+
+error() {
+    echo "ERROR: $*" >&2
+    exit 1
+}
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --fw-name)
+            shift; [ $# -gt 0 ] || error "--fw-name requires an argument"
+            FW_NAME="$1" ;;
+        --conf)
+            shift; [ $# -gt 0 ] || error "--conf requires an argument"
+            CONF="$1" ;;
+        --list)    ACTION="list" ;;
+        --unload)  ACTION="unload" ;;
+        -v|--verbose) VERBOSE=1 ;;
+        -h|--help) print_usage; exit 0 ;;
+        *)         error "Unknown argument: $1" ;;
+    esac
+    shift
+done
+
+[ -n "$FW_NAME" ] || { print_usage; error "--fw-name is required"; }
+
+# Mirror dfx-fw-install's path-separator guard.
+case "$FW_NAME" in
+    */*|..*|.*/*) error "--fw-name must not contain path separators" ;;
+esac
+
+[ -n "$CONF" ] || CONF="/usr/lib/modules-load.d/${FW_NAME}.conf"
+
+[ -r "$CONF" ] || error "modules-load conf '${CONF}' not found or not readable"
+
+# Read the conf into a list, stripping comments and blank lines.
+# Preserve the order written in the file (dependency order matters).
+MODULES=$(awk '/^[[:space:]]*#/ {next} /^[[:space:]]*$/ {next} {print $1}' "$CONF")
+
+if [ -z "$MODULES" ]; then
+    echo "kria-modules-load: ${CONF} contains no modules; nothing to do."
+    exit 0
+fi
+
+if [ "$ACTION" = "list" ]; then
+    printf '%s\n' "$MODULES"
+    exit 0
+fi
+
+log_cmd() {
+    if [ "$VERBOSE" -eq 1 ]; then
+        echo "+ $*"
+    fi
+}
+
+rc=0
+if [ "$ACTION" = "load" ]; then
+    for m in $MODULES; do
+        log_cmd modprobe "$m"
+        if ! modprobe "$m"; then
+            echo "WARNING: modprobe ${m} failed" >&2
+            rc=1
+        fi
+    done
+else
+    # Reverse the list for unload so dependents go before providers.
+    REVERSED=$(printf '%s\n' "$MODULES" | tac)
+    for m in $REVERSED; do
+        log_cmd rmmod "$m"
+        if ! rmmod "$m" 2>/dev/null; then
+            # Module may already be unloaded or builtin; not fatal.
+            echo "NOTE: rmmod ${m} skipped (not loaded or in use)" >&2
+        fi
+    done
+fi
+
+exit $rc
