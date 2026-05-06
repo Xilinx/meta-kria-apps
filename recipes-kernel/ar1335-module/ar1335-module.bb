@@ -14,7 +14,7 @@ LIC_FILES_CHKSUM = "file://../LICENSE;md5=7aaf58a37e0aa851bb718d75c1734884"
 # Upstream has no tags; pin to a known-good main commit.
 SRC_BRANCH = "main"
 SRC_URI = "git://github.com/Xilinx/ar1335-module.git;protocol=https;branch=${SRC_BRANCH}"
-SRCREV = "df0996900eebbe8d6e4bd801977aa34a6d91322d"
+SRCREV = "a4f6b8c4b960a62f0f179a741b1e4d9642a1902d"
 PV = "0.1+git${SRCPV}"
 
 S = "${WORKDIR}/git/src"
