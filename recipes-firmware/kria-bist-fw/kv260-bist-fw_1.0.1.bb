@@ -15,6 +15,7 @@ RDEPENDS:${PN} += " \
     ar1335-module \
     kernel-module-ap1302 \
     kernel-module-xlnx-vcu \
+    ap1302-firmware \
 "
 
 # Modules to load for the kv260-bist overlay. ap1302 (the on-board ISP)
