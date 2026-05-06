@@ -10,7 +10,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=373bd34d54f1879c43e6c180077e7eec"
 
 SRC_URI = "git://github.com/Xilinx/kria-bist.git;branch=main;protocol=https"
-SRCREV = "a1dec5c60fb9e6f127b44f75e1e4cce45224c612"
+SRCREV = "ab58af6c626149f722add57298df8516f58ba705"
 
 S = "${WORKDIR}/git"
 
