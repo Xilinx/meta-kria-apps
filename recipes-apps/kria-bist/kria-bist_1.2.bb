@@ -23,6 +23,7 @@ RDEPENDS:${PN} = " \
     python3-periphery \
     python3-can \
     python3-pymodbus \
+    python3-netifaces \
     libiio \
     libiio-python3 \
     tpm2-tools \
@@ -36,6 +37,8 @@ RDEPENDS:${PN} = " \
     mtd-utils \
     i2c-tools \
     freeipmi \
+    util-linux-mount \
+    util-linux-umount \
 "
 
 KRIA_BIST_INSTALL_DIR = "/opt/xilinx/kria-bist"
