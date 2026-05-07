@@ -28,10 +28,9 @@ RDEPENDS:${PN} = " \
     libiio-python3 \
     tpm2-tools \
     v4l-utils \
-    gstreamer1.0 \
+    packagegroup-xilinx-gstreamer \
     gstreamer1.0-plugins-good-meta \
     gstreamer1.0-plugins-bad-meta \
-    gst-perf \
     libdrm-tests \
     iperf3 \
     ethtool \
@@ -41,6 +40,7 @@ RDEPENDS:${PN} = " \
     iputils-ping \
     util-linux-mount \
     util-linux-umount \
+    libtss2-tcti-device \
 "
 
 KRIA_BIST_INSTALL_DIR = "/opt/xilinx/kria-bist"
@@ -48,6 +48,28 @@ KRIA_BIST_INSTALL_DIR = "/opt/xilinx/kria-bist"
 do_install() {
     install -d ${D}${KRIA_BIST_INSTALL_DIR}
     cp -r ${S}/tests ${D}${KRIA_BIST_INSTALL_DIR}/
+
+    # tpm2-tools defaults its TCTI to swtpm (TCP 127.0.0.1:2321), which
+    # is not running in the container and is not what we want anyway -
+    # the BIST suite drives the real on-board TPM via the kernel
+    # character device. Pin the default TCTI to the in-kernel resource
+    # manager so plain "tpm2_pcrread" / "tpm2_getcap" calls just work.
+    install -d ${D}${sysconfdir}/profile.d
+    cat > ${D}${sysconfdir}/profile.d/kria-bist-tpm2.sh <<'EOF'
+# Set by the kria-bist recipe so tpm2-tools targets the kernel TPM
+# resource manager instead of falling back to swtpm.
+if [ -e /dev/tpmrm0 ]; then
+    export TPM2TOOLS_TCTI="device:/dev/tpmrm0"
+    export TCTI="device:/dev/tpmrm0"
+elif [ -e /dev/tpm0 ]; then
+    export TPM2TOOLS_TCTI="device:/dev/tpm0"
+    export TCTI="device:/dev/tpm0"
+fi
+EOF
+    chmod 0644 ${D}${sysconfdir}/profile.d/kria-bist-tpm2.sh
 }
 
-FILES:${PN} = "${KRIA_BIST_INSTALL_DIR}"
+FILES:${PN} = " \
+    ${KRIA_BIST_INSTALL_DIR} \
+    ${sysconfdir}/profile.d/kria-bist-tpm2.sh \
+"
