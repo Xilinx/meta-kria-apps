@@ -29,14 +29,16 @@ RDEPENDS:${PN} = " \
     tpm2-tools \
     v4l-utils \
     gstreamer1.0 \
-    gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-good-meta \
+    gstreamer1.0-plugins-bad-meta \
+    gst-perf \
     libdrm-tests \
     iperf3 \
     ethtool \
     mtd-utils \
     i2c-tools \
     freeipmi \
+    iputils-ping \
     util-linux-mount \
     util-linux-umount \
 "
