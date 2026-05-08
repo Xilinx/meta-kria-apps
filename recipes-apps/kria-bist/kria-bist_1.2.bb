@@ -28,9 +28,11 @@ RDEPENDS:${PN} = " \
     libiio-python3 \
     tpm2-tools \
     v4l-utils \
-    packagegroup-xilinx-gstreamer \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-base-meta \
     gstreamer1.0-plugins-good-meta \
     gstreamer1.0-plugins-bad-meta \
+    gst-perf \
     libdrm-tests \
     iperf3 \
     ethtool \
