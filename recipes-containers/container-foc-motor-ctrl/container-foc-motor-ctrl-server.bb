@@ -19,4 +19,6 @@ CONTAINER_APP_CMD = "bash"
 CONTAINER_APP = " \
     kd240-motor-ctrl-qei-fw \
     motor-control-iio-modules \
+    foc-motor-ctrl-server \
+    foc-motor-ctrl-dashboard \
 "

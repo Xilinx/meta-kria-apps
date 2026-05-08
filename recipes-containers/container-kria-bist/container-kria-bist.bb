@@ -21,6 +21,7 @@ CONTAINER_APP_CMD = "bash"
 # firmware recipe's RDEPENDS, so they do not need to be listed here.
 CONTAINER_APP = " \
     kria-bist \
+    foc-motor-ctrl \
     kd240-bist-fw \
     kr260-bist-fw \
     kv260-bist-fw \
