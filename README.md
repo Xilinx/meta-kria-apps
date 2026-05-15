@@ -13,7 +13,7 @@ This layer depends on:
     URI: https://git.openembedded.org/openembedded-core
     layers: meta
 
-    URI: https://github.com/AMD-AECG-SSW-PUBLIC/meta-kria
+    URI: https://github.com/Xilinx/meta-kria
     branch: 2026.1
 
 ## Maintainers / Patches / Submissions
