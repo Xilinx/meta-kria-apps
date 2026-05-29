@@ -31,6 +31,7 @@ ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 ROS_EXEC_DEPENDS = " \
     canopen-402-driver \
     canopen-core \
+    canopen-master-driver \
     canopen-ros2-control \
     canopen-ros2-controllers \
     controller-manager \
