@@ -57,7 +57,7 @@ SRC_URI = " \
     git://github.com/Xilinx/foc-motor-ctrl.git;protocol=https;branch=main \
     file://0001-package-bump-version-to-0.5.0.patch;striplevel=3 \
 "
-SRCREV = "3573b84076383c7f59472bb11b56af15fb1d38bd"
+SRCREV = "18efd3c9e6689281f357193239c358b7a20785a2"
 
 S = "${WORKDIR}/git/test/ros2_canopen"
 

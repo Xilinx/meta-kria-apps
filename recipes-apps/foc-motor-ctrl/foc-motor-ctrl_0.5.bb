@@ -15,7 +15,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=370aacba9d9e1a362c89a2b36dc0608d"
 
 SRC_URI = "git://github.com/Xilinx/foc-motor-ctrl.git;branch=main;protocol=https"
-SRCREV = "3573b84076383c7f59472bb11b56af15fb1d38bd"
+SRCREV = "18efd3c9e6689281f357193239c358b7a20785a2"
 
 S = "${WORKDIR}/git"
 
@@ -112,6 +112,7 @@ RDEPENDS:${PN}-dashboard = " \
     ${PN} \
     bash \
     python3-bokeh \
+    python3-image \
     python3-numpy \
 "
 SUMMARY:${PN}-dashboard = "Bokeh-based dashboard launcher for the FOC motor-control server"
