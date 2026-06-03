@@ -7,7 +7,7 @@ require kria-bist-fw.inc
 
 FW_NAME = "kr260-bist"
 
-SRC_URI[sha256sum] = "afe58144190536b1c07653ed80eff54cc46ed3eebfaa3b957173afbe49eaac77"
+SRC_URI[sha256sum] = "1ce120f7ec88825e18c3a5672f020f23d9c691fb2a607d0f5939cd98cdc4183f"
 
 # Out-of-tree FRAMOS IMX547 sensor driver referenced by the kr260-bist
 # DT overlay (see recipes-firmware/module-dependencies.md).

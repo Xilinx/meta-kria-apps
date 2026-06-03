@@ -7,7 +7,7 @@ require kria-bist-fw.inc
 
 FW_NAME = "kd240-bist"
 
-SRC_URI[sha256sum] = "746cb3d6cdd32a5e850094b4304557ba87e3b2046bb6061a347f14803517f678"
+SRC_URI[sha256sum] = "a19581f8bea272ddc743323391d192bb4daaef1139b5ca15a88f1c0d55a8ac38"
 
 # Out-of-tree IIO drivers and in-tree =m modules referenced by the
 # kd240-bist DT overlay (see recipes-firmware/module-dependencies.md).

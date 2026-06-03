@@ -12,7 +12,7 @@ LICENSE = "MIT"
 # fetched into ${WORKDIR} via file://LICENSE; reach it via ../.
 LIC_FILES_CHKSUM = "file://../LICENSE;md5=57d17a0caea0d565f8f673971e3c2e10"
 
-FW_VERSION ?= "v1.0.1"
+FW_VERSION ?= "v1.2"
 FW_BASE_URL ?= "https://github.com/Xilinx/kria-vitis-platforms/releases/download/${FW_VERSION}"
 
 # The release tarballs do not ship a LICENSE file, so attach the MIT text
