@@ -53,10 +53,7 @@ DEPENDS += " \
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
 # Stay in lockstep with foc-motor-ctrl_0.5.bb (v0.5 tag).
-SRC_URI = " \
-    git://github.com/Xilinx/foc-motor-ctrl.git;protocol=https;branch=main \
-    file://0001-package-bump-version-to-0.5.0.patch;striplevel=3 \
-"
+SRC_URI = "git://github.com/Xilinx/foc-motor-ctrl.git;protocol=https;branch=main"
 SRCREV = "18efd3c9e6689281f357193239c358b7a20785a2"
 
 S = "${WORKDIR}/git/test/ros2_canopen"
