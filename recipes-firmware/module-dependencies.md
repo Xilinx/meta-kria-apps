@@ -63,8 +63,7 @@ Source: `kria-vitis-platforms/kd240/platforms/kd240_motor_ctrl_qei/dtsi/kd240-mo
 
 ### KR260 / `kr260-bist`
 
-Source: `kria-vitis-platforms-internal/kr260/platforms/kr260_bist/dtsi/kr260-bist.dtsi`
-(public release tarball ships the same compatibles)
+Source: `kria-vitis-platforms/kr260/platforms/kr260_bist/dtsi/kr260-bist.dtsi`
 
 | compatible | driver / module | Kernel status | Recipe RDEPENDS |
 |---|---|---|---|
@@ -72,7 +71,7 @@ Source: `kria-vitis-platforms-internal/kr260/platforms/kr260_bist/dtsi/kr260-bis
 | `xlnx,axi-iic-2.1` | i2c-xiic | Y (CONFIG_I2C_XILINX=y) | none |
 | `xlnx,xxv-ethernet-4.1` | xilinx_axienet (XXV path) | Y (CONFIG_XILINX_AXI_EMAC=y) | none |
 | `xlnx,axi-ethernet-7.2` / `xlnx,eth-dma` | xilinx_axienet | Y | none |
-| `xlnx,xps-gpio-1.00.a` (commented out today) | gpio-xilinx | Y | none (when re-enabled) |
+| `xlnx,xps-gpio-1.00.a` | gpio-xilinx | Y | none |
 | `xlnx,axi-frmbuf-wr-v2.2` / `v2.1` | xilinx-frmbuf | Y (CONFIG_XILINX_FRMBUF=y) | none |
 | `xlnx,axis-subsetconv-1.1` | xilinx subset converter | Y (CONFIG_VIDEO_XILINX_AXI4S_SUBSETCONV=y) | none |
 | `xlnx,video` | xilinx-video pipeline shim | Y (CONFIG_VIDEO_XILINX=y) | none |
@@ -186,7 +185,7 @@ reconfig moves any of those `=y` symbols to `=m`, the corresponding
 module name must be added to the matching conf list (and to the
 `KRIA_FW_MODULES` var in the recipe).
 
-Suggested host invocation pattern:
+Possible host invocation pattern:
 
 ```
 FW_NAME=kd240-bist
@@ -204,29 +203,7 @@ sudo dfx-mgr-client -load ${FW_NAME}
 the host kernel and modprobe needs CAP_SYS_MODULE. `dfx-fw-install`
 by itself does not need `--privileged`.
 
-## Kernel config gaps to raise upstream / fix in a kernel bbappend
-
-These would otherwise cause silent runtime failures:
-
-1. `CONFIG_CAN_MCP251X` was `not set` upstream. Required by the
-   `microchip,mcp25625` nodes in `kd240-bist` and `kr260-tsn-rs485pmod`.
-   Enabled `=m` via this layer's `recipes-kernel/linux/linux-xlnx_%.bbappend`
-   + `kria-apps-extra.cfg`; `CONFIG_CAN_VCAN=m` is also enabled there for
-   the ROS2 CANopen container's loopback testing.
-2. `CONFIG_PPS_CLIENT_GPIO` is `not set` upstream. Required by `pps-gpio` in
-   `kr260-pmod-gps`. Enabled `=m` via this layer's
-   `recipes-kernel/linux/linux-xlnx_%.bbappend` + `kria-apps-extra.cfg`.
-3. `CONFIG_VIDEO_IMX708` is absent. Only the optional
-   `kv260-bist-imx708.dtsi` overlay needs it; if that overlay is not
-   shipped, no action is required.
-4. `CONFIG_VIDEO_ALLEGRO` (or equivalent `al5e`/`al5d` encoder/decoder
-   driver) is not built. The KV260 BIST loads the VCU compatible
-   (`xlnx,vcu`, served by `xlnx_vcu.ko`); whether the al5e/al5d nodes need a
-   matching kernel driver here depends on whether BIST exercises encode /
-   decode paths or only verifies the VCU clock controller. Worth confirming
-   with the BIST test owner before treating it as a gap.
-
-## Open questions worth resolving before applying these RDEPENDS
+## Note for future, if kernel config changes.
 
 1. The TSN driver set is fully `=y` in this kernel
    (`CONFIG_XILINX_TSN=y` plus all sub-options), so the
@@ -236,13 +213,6 @@ These would otherwise cause silent runtime failures:
 2. `mv-camera-sensor-module` is built and packaged
    (`kernel-module-imx547`); the KR260 BIST overlay binds the IMX547
    sensor node via this driver.
-3. The currently shipped `kr260-bist.dtbo` has the gpio node commented
-   out (per the internal repo dts) as a temporary workaround. Once the
-   workaround is replaced with the upstream-fixed dtbo that re-introduces
-   the `xlnx,xps-gpio-1.00.a` node, the gpio-xilinx driver becomes
-   load-bearing (it is `=y` so no RDEPENDS change is needed, but flag in
-   the bbappend that the workaround is removable).
-4. Allegro al5e/al5d encoder/decoder driver: see config gap #4 above.
 
 ## How this analysis was produced
 
