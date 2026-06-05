@@ -6,9 +6,14 @@ DESCRIPTION = "Builds the kria_motor_control ament package from \
 foc-motor-ctrl/test/ros2_canopen. The package provides the ros2_control / \
 ros2_canopen configuration and launch files used on KR260 to drive the FOC \
 motor server running on KD240 over CAN."
-HOMEPAGE = "https://github.com/Xilinx/foc-motor-ctrl"
 SECTION = "devel"
-LICENSE = "MIT"
+
+# Pulls in HOMEPAGE, LICENSE, SRC_URI, SRCREV so this recipe and
+# foc-motor-ctrl_0.5.bb stay in lockstep against the same SRCREV.
+require foc-motor-ctrl-src.inc
+
+# S points two levels into the upstream tree (test/ros2_canopen),
+# so the LICENSE file lives at ../../LICENSE relative to S.
 LIC_FILES_CHKSUM = "file://../../LICENSE;md5=370aacba9d9e1a362c89a2b36dc0608d"
 
 inherit ros_distro_jazzy
@@ -43,18 +48,16 @@ ROS_EXEC_DEPENDS = " \
     xacro \
 "
 
-DEPENDS  = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
-DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
-DEPENDS += " \
+DEPENDS = " \
+    ${ROS_BUILD_DEPENDS} \
+    ${ROS_BUILDTOOL_DEPENDS} \
+    ${ROS_BUILDTOOL_EXPORT_DEPENDS} \
+    ${ROS_EXPORT_DEPENDS} \
     lely-core-libraries-native \
     lely-core-native \
 "
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
-
-# Stay in lockstep with foc-motor-ctrl_0.5.bb (v0.5 tag).
-SRC_URI = "git://github.com/Xilinx/foc-motor-ctrl.git;protocol=https;branch=main"
-SRCREV = "18efd3c9e6689281f357193239c358b7a20785a2"
 
 S = "${WORKDIR}/git/test/ros2_canopen"
 

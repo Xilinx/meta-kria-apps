@@ -9,13 +9,13 @@ launcher used on Kria KD240. Each component is split into its own package \
 so a downstream image only carries what it actually needs - the BIST \
 container only pulls the lib + python binding, while the full motor \
 server container pulls the lib + server + dashboard."
-HOMEPAGE = "https://github.com/Xilinx/foc-motor-ctrl"
 SECTION = "apps"
-LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=370aacba9d9e1a362c89a2b36dc0608d"
 
-SRC_URI = "git://github.com/Xilinx/foc-motor-ctrl.git;branch=main;protocol=https"
-SRCREV = "18efd3c9e6689281f357193239c358b7a20785a2"
+# Pulls in HOMEPAGE, LICENSE, SRC_URI, SRCREV so this recipe and
+# kria-motor-control_0.5.bb stay in lockstep against the same SRCREV.
+require foc-motor-ctrl-src.inc
+
+LIC_FILES_CHKSUM = "file://LICENSE;md5=370aacba9d9e1a362c89a2b36dc0608d"
 
 S = "${WORKDIR}/git"
 
@@ -25,11 +25,11 @@ inherit cmake python3targetconfig pkgconfig
 # - python3-pybind11: headers/cmake config for the python binding
 # - lely-core: provides liblely-coapp + headers for the CANopen server
 DEPENDS = " \
-    pkgconfig-native \
+    lely-core \
     libiio \
+    pkgconfig-native \
     python3 \
     python3-pybind11 \
-    lely-core \
 "
 
 # Build the standalone CANopen motor-control server and the Bokeh dashboard
