@@ -7,19 +7,19 @@
 
 HOMEPAGE = "https://github.com/Xilinx/kria-vitis-platforms"
 SECTION = "firmware"
-LICENSE = "MIT"
-# S points inside the unpacked release tarball, but the bundled MIT text is
-# fetched into ${WORKDIR} via file://LICENSE; reach it via ../.
-LIC_FILES_CHKSUM = "file://../LICENSE;md5=57d17a0caea0d565f8f673971e3c2e10"
+# The kria-vitis-platforms release tarballs (v1.2+) bundle the AMD/Xilinx
+# binary-only redistribution license at <fw-name>/LICENSE, which is the
+# right license for the bitstream / dtbo / xclbin payload. The license is
+# not in poky's COMMON_LICENSE_DIR, so declare it via NO_GENERIC_LICENSE
+# pointing at the same LICENSE file inside the unpacked tarball.
+LICENSE = "Advanced-Micro-Devices-Xilinx-binaries"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=17ed81f78abe63ee929646937685e8d1"
+NO_GENERIC_LICENSE[Advanced-Micro-Devices-Xilinx-binaries] = "LICENSE"
 
 FW_VERSION ?= "v1.2"
 FW_BASE_URL ?= "https://github.com/Xilinx/kria-vitis-platforms/releases/download/${FW_VERSION}"
 
-# The release tarballs do not ship a LICENSE file, so attach the MIT text
-# from this layer for LIC_FILES_CHKSUM and license manifesting.
-FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI = "${FW_BASE_URL}/${FW_NAME}.tar.gz \
-           file://LICENSE"
+SRC_URI = "${FW_BASE_URL}/${FW_NAME}.tar.gz"
 
 S = "${WORKDIR}/${FW_NAME}"
 
