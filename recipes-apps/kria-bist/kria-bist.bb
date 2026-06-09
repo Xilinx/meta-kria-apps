@@ -12,6 +12,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=373bd34d54f1879c43e6c180077e7eec"
 SRC_BRANCH = "main"
 SRC_URI = "git://github.com/Xilinx/kria-bist.git;branch=${SRC_BRANCH};protocol=https"
 SRCREV = "bbef9fe76f95bbdc1e0183dbe61fde25b00a2f84"
+PV = "1.2+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 

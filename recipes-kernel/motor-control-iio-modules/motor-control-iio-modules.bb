@@ -14,6 +14,7 @@ LIC_FILES_CHKSUM = "file://../LICENSE;md5=7d3d4519e1b227873d840232a002e048"
 SRC_BRANCH = "main"
 SRC_URI = "git://github.com/Xilinx/motor-control-iio-modules.git;protocol=https;branch=${SRC_BRANCH}"
 SRCREV = "3900e31dce144199c42a528bbce93ede2946a690"
+PV = "0.2+git${SRCPV}"
 
 S = "${WORKDIR}/git/src"
 

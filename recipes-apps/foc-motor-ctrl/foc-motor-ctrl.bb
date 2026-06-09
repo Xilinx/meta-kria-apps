@@ -12,8 +12,10 @@ server container pulls the lib + server + dashboard."
 SECTION = "apps"
 
 # Pulls in HOMEPAGE, LICENSE, SRC_URI, SRCREV so this recipe and
-# kria-motor-control_0.5.bb stay in lockstep against the same SRCREV.
+# kria-motor-control.bb stay in lockstep against the same SRCREV.
 require foc-motor-ctrl-src.inc
+
+PV = "0.5+git${SRCPV}"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=370aacba9d9e1a362c89a2b36dc0608d"
 

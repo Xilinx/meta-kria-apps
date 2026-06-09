@@ -9,8 +9,10 @@ motor server running on KD240 over CAN."
 SECTION = "devel"
 
 # Pulls in HOMEPAGE, LICENSE, SRC_URI, SRCREV so this recipe and
-# foc-motor-ctrl_0.5.bb stay in lockstep against the same SRCREV.
+# foc-motor-ctrl.bb stay in lockstep against the same SRCREV.
 require foc-motor-ctrl-src.inc
+
+PV = "0.5+git${SRCPV}"
 
 # S points two levels into the upstream tree (test/ros2_canopen),
 # so the LICENSE file lives at ../../LICENSE relative to S.

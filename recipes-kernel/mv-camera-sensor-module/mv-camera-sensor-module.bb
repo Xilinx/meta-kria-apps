@@ -13,6 +13,7 @@ LIC_FILES_CHKSUM = "file://../LICENSE.md;md5=5f09740fd2d17408528aaf480de6353c"
 SRC_BRANCH = "main"
 SRC_URI = "git://github.com/Xilinx/mv-camera-sensor-module.git;protocol=https;branch=${SRC_BRANCH}"
 SRCREV = "291fb1991a6b7d30ee0575acccb4c65be5629a97"
+PV = "0.3+git${SRCPV}"
 
 S = "${WORKDIR}/git/src"
 
