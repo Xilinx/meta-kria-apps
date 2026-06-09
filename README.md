@@ -11,8 +11,8 @@ release. Tested against Yocto Scarthgap.
 | Area | Recipe | Notes |
 |---|---|---|
 | Apps | [kria-bist](recipes-apps/kria-bist) | pytest BIST suite (KD240 / KR260 / KV260) |
-| Apps | [foc-motor-ctrl](recipes-apps/foc-motor-ctrl/foc-motor-ctrl_0.5.bb) | FOC lib + py binding + CANopen server + Bokeh dashboard (KD240) |
-| Apps | [kria-motor-control](recipes-apps/foc-motor-ctrl/kria-motor-control_0.5.bb) | ROS 2 CANopen client (KR260) |
+| Apps | [foc-motor-ctrl](recipes-apps/foc-motor-ctrl) | FOC lib + py binding + CANopen server + Bokeh dashboard (KD240) |
+| Apps | [kria-motor-control](recipes-apps/foc-motor-ctrl) | ROS 2 CANopen client (KR260) |
 | Apps | [pmod-rs485-test](recipes-apps/pmod-rs485-test) | RS485 PMOD demo (KR260) |
 | Kernel | [motor-control-iio-modules](recipes-kernel/motor-control-iio-modules) | HLS FOC / PWM / QEI / SVPWM / ADC-hub IIO drivers |
 | Kernel | [ar1335-module](recipes-kernel/ar1335-module) | AR1335 sensor driver (KV260) |
