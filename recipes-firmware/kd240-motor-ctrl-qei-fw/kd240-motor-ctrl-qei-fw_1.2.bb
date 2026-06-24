@@ -36,12 +36,14 @@ RDEPENDS:${PN} += " \
     motor-control-iio-modules \
     kernel-module-uio-pdrv-genirq \
     kernel-module-amd-axi-w1 \
+    kernel-module-w1-therm \
 "
 
 # Modules to load for the kd240-motor-ctrl-qei overlay. uio_pdrv_genirq
 # must come first so generic-uio nodes can bind. amd_axi_w1 drives the
-# AXI 1-Wire master IP. The TSN driver set is built into the kernel
-# (CONFIG_XILINX_TSN=y) and does not need explicit loading.
-KRIA_FW_MODULES = "uio_pdrv_genirq amd_axi_w1 xilinx-adc-hub hls-foc-periodic hls-pwm-gen hls-qei-axi hls-svpwm-duty"
+# AXI 1-Wire master IP; w1_therm must follow it so the 1-Wire thermal
+# slaves bind and expose their hwmon temp inputs. The TSN driver set is
+# built into the kernel (CONFIG_XILINX_TSN=y) and does not need loading.
+KRIA_FW_MODULES = "uio_pdrv_genirq amd_axi_w1 w1_therm xilinx-adc-hub hls-foc-periodic hls-pwm-gen hls-qei-axi hls-svpwm-duty"
 
 require ../kria-fw-modules-load.inc

@@ -57,6 +57,7 @@ Source: `kria-vitis-platforms/kd240/platforms/kd240_motor_ctrl_qei/dtsi/kd240-mo
 | `xlnx,tsn-endpoint-ethernet-mac-2.0` etc. | xilinx_axienet (TSN build) | Y (CONFIG_XILINX_TSN=y + sub-options) | none |
 | `xlnx,xps-intc-1.00.a` | irq-xilinx-intc | Y | none |
 | `amd,axi-1wire-host` | amd_axi_w1 | M | `kernel-module-amd-axi-w1` |
+| `w1_slave` (DS18B20-style temp slave) | w1_therm | M (CONFIG_W1_SLAVE_THERM=m via this layer's `linux-xlnx` bbappend) | `kernel-module-w1-therm` |
 | `xlnx,eth-dma` | xilinx_axienet | Y | none |
 | `generic-uio` | uio_pdrv_genirq | M | `kernel-module-uio-pdrv-genirq` |
 | `xlnx,afi-fpga`, `fixed-factor-clock` | core | Y | none |
@@ -150,7 +151,7 @@ In-tree modules built as `=m` to add via `RDEPENDS:${PN}` (so the
 | firmware recipe | kernel modules (`=m`) to RDEPENDS |
 |---|---|
 | `kd240-bist-fw` | `kernel-module-uio-pdrv-genirq kernel-module-mcp251x` |
-| `kd240-motor-ctrl-qei-fw` | `kernel-module-uio-pdrv-genirq kernel-module-amd-axi-w1` |
+| `kd240-motor-ctrl-qei-fw` | `kernel-module-uio-pdrv-genirq kernel-module-amd-axi-w1 kernel-module-w1-therm` |
 | `kr260-bist-fw` | none (only the OOT `mv-camera-sensor-module` is needed) |
 | `kr260-tsn-rs485pmod-fw` | `kernel-module-uio-pdrv-genirq kernel-module-mcp251x` |
 | `kr260-pmod-gps-fw` | `kernel-module-pps-gpio` |
@@ -174,7 +175,7 @@ verbatim.
 | firmware recipe | modules-load.d entries (in load order) |
 |---|---|
 | `kd240-bist-fw` | `uio_pdrv_genirq mcp251x xilinx-adc-hub hls-foc-periodic hls-pwm-gen hls-qei-axi hls-svpwm-duty` |
-| `kd240-motor-ctrl-qei-fw` | `uio_pdrv_genirq amd_axi_w1 xilinx-adc-hub hls-foc-periodic hls-pwm-gen hls-qei-axi hls-svpwm-duty` |
+| `kd240-motor-ctrl-qei-fw` | `uio_pdrv_genirq amd_axi_w1 w1_therm xilinx-adc-hub hls-foc-periodic hls-pwm-gen hls-qei-axi hls-svpwm-duty` |
 | `kr260-bist-fw` | `imx547` |
 | `kr260-tsn-rs485pmod-fw` | `uio_pdrv_genirq mcp251x` |
 | `kv260-bist-fw` | `ap1302 ar1335 xlnx_vcu` |
