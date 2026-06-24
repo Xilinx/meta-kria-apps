@@ -22,8 +22,13 @@ CONTAINER_APP_CMD = ""
 # set lands transitively. foc-motor-ctrl-server / -dashboard RDEPEND
 # the foc-motor-ctrl lib + python binding, so the lib lands transitively
 # too. Only list the top-level recipes the container actually drives.
+#
+# lmsensors-sensors provides the `sensors` CLI used to read the 1-Wire
+# thermal hwmon inputs (w1_therm) bound by the kd240-motor-ctrl-qei
+# overlay.
 CONTAINER_APP = " \
     kd240-motor-ctrl-qei-fw \
     foc-motor-ctrl-server \
     foc-motor-ctrl-dashboard \
+    lmsensors-sensors \
 "
