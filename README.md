@@ -25,6 +25,7 @@ release. Tested against Yocto Scarthgap.
 | Containers | [container-foc-motor-ctrl-server](recipes-containers/container-foc-motor-ctrl) | KD240 FOC server + dashboard |
 | Containers | [container-foc-motor-ctrl-ros2-canopen](recipes-containers/container-foc-motor-ctrl) | KR260 ROS 2 CANopen client (runtime) |
 | Containers | [container-foc-motor-ctrl-ros2-canopen-dev](recipes-containers/container-foc-motor-ctrl) | KR260 ROS 2 CANopen client (with dev tools) |
+| Containers | [container-tsn-rs485pmod](recipes-containers/container-tsn) | KR260 ROS 2 multi-node communication via TSN |
 | Utils | [dfx-fw-install](recipes-utils/dfx-fw-install) | Container helper: stage fw blobs onto the host fs |
 | Utils | [kria-modules-load](recipes-utils/kria-modules-load) | Container helper: modprobe a fw overlay's kernel modules |
 
