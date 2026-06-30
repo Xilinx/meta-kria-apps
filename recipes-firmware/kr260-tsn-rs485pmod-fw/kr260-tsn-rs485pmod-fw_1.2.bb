@@ -16,7 +16,7 @@ FW_VERSION = "v1.2"
 FW_BASE_URL = "https://github.com/Xilinx/kria-vitis-platforms/releases/download/${FW_VERSION}"
 
 SRC_URI = "${FW_BASE_URL}/${FW_NAME}.tar.gz"
-SRC_URI[sha256sum] = "e891a2e797468096cc3d152a429dade4c7b0735ac0f00fd3db74fd6ec86bd430"
+SRC_URI[sha256sum] = "a2fa69abf520c4ffc8f2f5eb02fd613fdaffc54c2e0e977b8443f70325d176fd"
 
 S = "${WORKDIR}/${FW_NAME}"
 

@@ -7,7 +7,7 @@ require kria-bist-fw.inc
 
 FW_NAME = "kv260-bist"
 
-SRC_URI[sha256sum] = "b7efaad35b44adbc26b4dca5d3406d99e34b2bf8be6286ca1bac4eaefe70a013"
+SRC_URI[sha256sum] = "4282f3dc27611f74672526f95f0dd7c57328697a8feebfccbfb4e9cadff41d8a"
 
 # Out-of-tree AR1335 sensor driver and in-tree =m modules referenced by
 # the kv260-bist DT overlay (see recipes-firmware/module-dependencies.md).
