@@ -33,8 +33,8 @@ inherit allarch
 # form "ap1302_<sensor>_<count>_fw.bin", which the kernel firmware
 # loader resolves at the root of ${nonarch_base_libdir}/firmware (i.e.
 # /lib/firmware) on the host. We cannot change the host layout without
-# a coordinated kernel patch (see /tmp/ap1302-patches/ for the patches
-# that move it to ap1302/<...>).
+# a coordinated kernel patch that moves the request_firmware() lookup to
+# an ap1302/<...> subdirectory.
 #
 # Inside the container, however, the blobs only need to live somewhere
 # stable for dfx-fw-install to rsync them onto the host. Stage them

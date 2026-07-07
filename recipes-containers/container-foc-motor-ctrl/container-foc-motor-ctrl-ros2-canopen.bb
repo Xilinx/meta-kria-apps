@@ -32,7 +32,7 @@ CONTAINER_APP_CMD = ""
 # cansend for field debugging of the CAN link.
 #
 # Note: the EDF reference also pulled packagegroup-xilinx-ros-canopen,
-# but that packagegroup was dropped in the 2026.1-rlatest refresh of
+# but that packagegroup was dropped in the 2026.1 refresh of
 # meta-xilinx-demos. The runtime canopen closure is now driven from
 # kria-motor-control's RDEPENDS instead. Once on-hardware launch is
 # verified end-to-end, evaluate whether the -control packagegroup can
