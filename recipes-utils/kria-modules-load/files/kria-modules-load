@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# SPDX-License-Identifier: MIT
+# Copyright (C) 2026 Advanced Micro Devices, Inc.
+#
 # kria-modules-load
 #
 # Load (or unload) the kernel modules a Kria firmware overlay depends

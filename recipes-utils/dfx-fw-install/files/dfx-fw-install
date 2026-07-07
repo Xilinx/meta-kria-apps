@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# SPDX-License-Identifier: MIT
+# Copyright (C) 2026 Advanced Micro Devices, Inc.
+#
 # dfx-fw-install
 #
 # Copy a single Kria/DFX firmware directory from inside an OCI container
