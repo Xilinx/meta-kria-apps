@@ -19,29 +19,108 @@ require recipes-containers/kria-app-container.inc
 CONTAINER_SHELL = "bash"
 CONTAINER_APP_CMD = ""
 
+# Runtime invocation - two profiles, same image:
+#
+# 1) Endpoint / node role (KR260/KD240 board that binds the PL overlay,
+#    runs the TSN endpoint/switch tooling and the receiving tftpd). Needs
+#    the PL, kernel resources, dfx-mgr and register access:
+#
+#      sudo docker run --rm -it --privileged \
+#          --net=host \
+#          -v /dev:/dev \
+#          -v /sys:/sys \
+#          -v /var/run/dfx-mgrd.socket:/var/run/dfx-mgrd.socket \
+#          container-tsn-rs485pmod:latest /bin/bash
+#
+#    Do NOT mount /run or /etc here: mounting /run makes the container
+#    see the host's /run/systemd/system and take the systemctl tftpd
+#    path (no systemd in the container), and mounting /etc shadows the
+#    container's /etc/default/tftpd-hpa. Both re-break the standalone
+#    tftpd start.
+#
+# 2) CNC / network-manager role (the node that generates the schedules
+#    and pushes them out). This is a pure TFTP *client* (xcnc_setup ->
+#    qbv.py/fdb.py -> tftp_nm.py `curl -T tftp://<node>`); it never binds
+#    the PL, so it needs neither --privileged, /dev, /sys, nor the
+#    dfx-mgr socket. Only host networking is required so arp can resolve
+#    node MAC->IP and the UDP TFTP traffic reaches the boards:
+#
+#      sudo docker run --rm -it --net=host \
+#          container-tsn-rs485pmod:latest /bin/bash
+#
+#    The same image serves both roles. On a non-Kria Linux CNC host, the
+#    documented git-clone method is used instead of this container.
+
+# Runtime deps that really belong in the upstream tsn-utils recipe's
+# RDEPENDS (or in packagegroup-tsn) in meta-xilinx-tsn, but are not
+# declared there yet. The tsn-networkmanager / tsn-scripts programs
+# shell out to and import all of these, so we carry them here to make
+# the container self-contained. This is INTENTIONALLY REDUNDANT with
+# the eventual upstream RDEPENDS - keep it until meta-xilinx-tsn covers
+# them, then delete this whole variable. Per-package justification:
+#   inotify-tools  - inotifywait, config-dir watch
+#   python3-libconf- `import libconf` in qbv-parser.py (separate recipe,
+#                    not part of python3-modules)
+#   python3-pyyaml - `import yaml` in fdb.py (separate recipe, not part
+#                    of python3-modules)
+#   python3-modules- pulls the full CPython stdlib. The network-manager
+#                    scripts import a scattered set of stdlib modules
+#                    that Yocto splits into many python3-* subpackages;
+#                    rather than track each one (brittle when upstream
+#                    adds an import), pull them all. It grows the image
+#                    by ~13 MB compressed (bz2 ~32M -> ~45M); the
+#                    robustness is worth it here. The specific stdlib
+#                    modules actually imported (for reference / if a
+#                    minimal set is ever wanted):
+#                      json       -> python3-json    (xcnc_setup, fdb.py,
+#                                    qbv.py, common.py)
+#                      string     -> python3-stringold (qbv.py, fdb.py)
+#                      datetime   -> python3-datetime (common.py,
+#                                    qbv-parser.py)
+#                      decimal    -> python3-numbers  (qbv-parser.py)
+#                      pty        -> python3-terminal (qbv-parser.py)
+#                      shlex      -> python3-shell    (qbv-parser.py)
+#                      re/os/sys/io/subprocess/math/signal/array/time/
+#                      shutil     -> python3-core (always present)
+#   curl           - TFTP schedule upload in tftp_nm.py; needs the tftp
+#                    PACKAGECONFIG from our curl bbappend
+#   tftp-hpa-server- in.tftpd-hpa + /etc/default/tftpd-hpa (receive side)
+#   busybox        - tftp_nm.py probes busybox for a tftp applet; also
+#                    supplies the devmem applet (our busybox bbappend)
+#   freeipmi       - ipmi-fru MAC/FRU read in mac_setup; RDEPENDed by the
+#                    dfx-mgr daemon but NOT dfx-mgr-client (what we install)
+REDUNDANT_TSNUTILS_RDEPENDS = " \
+    inotify-tools \
+    python3-libconf \
+    python3-pyyaml \
+    python3-modules \
+    curl \
+    tftp-hpa-server \
+    busybox \
+    freeipmi \
+"
+
 # kr260-tsn-rs485pmod-fw pulls its kernel-module set transitively
 # (uio_pdrv_genirq, mcp251x). packagegroup-tsn pulls the full TSN
-# runtime including tsn-utils (which already RDEPENDS python3-libconf
-# and bash) and tsn-examples. The remaining entries are the explicit
-# host-side tools the app_deployment flow uses but that are not pulled
-# transitively: inotify-tools (config-dir watch), curl (schedule
-# upload), tftp-hpa-server (peer-node receive), and python3-libconf
-# (listed defensively in case tsn-utils' RDEPENDS changes upstream).
-# tcpdump captures TSN traffic on the endpoint; busybox supplies the
-# devmem applet (enabled via our busybox bbappend) for register pokes.
-# freeipmi provides ipmi-fru, used by the tsn-networkmanager mac_setup
-# scripts to read the board's MAC IDs / product name from the FRU EEPROM
-# (--interpret-oem-data). It is RDEPENDed by the dfx-mgr daemon package
-# but NOT by dfx-mgr-client (which is what this container installs), so
-# it must be listed explicitly.
+# runtime (tsn-utils + tsn-examples + gptp/linuxptp/lldpd). tcpdump is a
+# container-side capture tool for TSN traffic (not a tsn-utils dep, so it
+# stays here rather than in REDUNDANT_TSNUTILS_RDEPENDS).
+#
+# ethtool - link/feature introspection used by the TSN bring-up flow.
+#
+# openlldp - provides lldpad/lldptool. The app_deployment flow uses the
+# 802.3br Additional Ethernet Capabilities TLV (lldptool ... set -tlv -V
+# addEthCaps), which the stock meta-networking openlldp (branch-1.1)
+# does NOT carry. This currently REQUIRES the meta-local-overrides
+# openlldp bbappend, which repoints the recipe at the Xilinx TSN branch.
+# Without that override a build gets stock openlldp and the addEthCaps
+# TLV will be missing. The TSN openlldp/lldpad should move into
+# meta-xilinx-tsn so this no longer depends on the override.
 CONTAINER_APP = " \
     kr260-tsn-rs485pmod-fw \
     packagegroup-tsn \
-    inotify-tools \
-    python3-libconf \
-    curl \
-    tftp-hpa-server \
     tcpdump \
-    busybox \
-    freeipmi \
+    ethtool \
+    openlldp \
+    ${REDUNDANT_TSNUTILS_RDEPENDS} \
 "
