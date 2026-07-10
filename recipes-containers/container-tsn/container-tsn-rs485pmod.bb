@@ -9,7 +9,8 @@ kd240-motor-ctrl-qei design carry the TSN IP (and the RS-485 PMOD), so \
 the same image serves either board: it bundles both firmware overlays, \
 the AMD Xilinx TSN runtime (gPTP / linuxptp / lldpd / tsn-utils / \
 tsn-examples via packagegroup-tsn), the pmod-rs485-test Modbus tool, \
-and the helper tools the deployment flow drives: tsn-networkmanager \
+the ros-tsn-pubsub talker/listener ROS 2 example, and the helper tools \
+the deployment flow drives: tsn-networkmanager \
 watches a config drop dir with inotify-tools and pushes per-node Qbv \
 schedules with curl over TFTP to the peer node's tftp-hpa-server. \
 python3-libconf parses the libconfig schedule files."
@@ -128,11 +129,16 @@ REDUNDANT_TSNUTILS_RDEPENDS = " \
 # Without that override a build gets stock openlldp and the addEthCaps
 # TLV will be missing. The TSN openlldp/lldpad should move into
 # meta-xilinx-tsn so this no longer depends on the override.
+#
+# ros-tsn-pubsub - the xlnx-pubsub ROS 2 talker/listener example the TSN
+# demo streams over the Qbv-scheduled link; also pulls the ros2 CLI run
+# verb it is launched with.
 CONTAINER_APP = " \
     kr260-tsn-rs485pmod-fw \
     kd240-motor-ctrl-qei-fw \
     packagegroup-tsn \
     pmod-rs485-test \
+    ros-tsn-pubsub \
     tcpdump \
     ethtool \
     openlldp \
