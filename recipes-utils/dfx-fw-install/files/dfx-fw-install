@@ -111,11 +111,6 @@ fi
 # dfx-mgr cannot see it.
 [ -d "$DEST" ] || error "destination directory '${DEST}' does not exist; create it on the host and bind-mount it into the container"
 
-if ! mountpoint -q "$DEST" 2>/dev/null; then
-    echo "WARNING: '${DEST}' is not a bind mount; copy will land inside the"
-    echo "         container's writable layer and be lost when it exits."
-fi
-
 # rsync flags:
 #   -a       archive (perms, timestamps, symlinks)
 #   -c       checksum-based diff so we only rewrite files whose content
