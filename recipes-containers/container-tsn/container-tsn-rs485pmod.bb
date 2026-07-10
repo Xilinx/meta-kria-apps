@@ -1,15 +1,18 @@
 # SPDX-License-Identifier: MIT
 # Copyright (C) 2026 Advanced Micro Devices, Inc.
 
-SUMMARY = "Kria KR260 TSN multi-node communication OCI container image"
-DESCRIPTION = "OCI container image targeting Kria KR260 for the ROS 2 \
-multi-node-communication-via-TSN application. Bundles the \
-kr260-tsn-rs485pmod firmware overlay, the AMD Xilinx TSN runtime \
-(gPTP / linuxptp / lldpd / tsn-utils / tsn-examples via \
-packagegroup-tsn) and the helper tools the deployment flow drives: \
-tsn-networkmanager watches a config drop dir with inotify-tools and \
-pushes per-node Qbv schedules with curl over TFTP to the peer node's \
-tftp-hpa-server. python3-libconf parses the libconfig schedule files."
+SUMMARY = "Kria TSN + RS-485 multi-node communication / test OCI container image"
+DESCRIPTION = "OCI container image for the ROS 2 \
+multi-node-communication-via-TSN application and the TSN / RS-485 test \
+suite. Both the KR260 kr260-tsn-rs485pmod design and the KD240 \
+kd240-motor-ctrl-qei design carry the TSN IP (and the RS-485 PMOD), so \
+the same image serves either board: it bundles both firmware overlays, \
+the AMD Xilinx TSN runtime (gPTP / linuxptp / lldpd / tsn-utils / \
+tsn-examples via packagegroup-tsn), the pmod-rs485-test Modbus tool, \
+and the helper tools the deployment flow drives: tsn-networkmanager \
+watches a config drop dir with inotify-tools and pushes per-node Qbv \
+schedules with curl over TFTP to the peer node's tftp-hpa-server. \
+python3-libconf parses the libconfig schedule files."
 
 require recipes-containers/kria-app-container.inc
 
@@ -100,11 +103,20 @@ REDUNDANT_TSNUTILS_RDEPENDS = " \
     freeipmi \
 "
 
-# kr260-tsn-rs485pmod-fw pulls its kernel-module set transitively
-# (uio_pdrv_genirq, mcp251x). packagegroup-tsn pulls the full TSN
-# runtime (tsn-utils + tsn-examples + gptp/linuxptp/lldpd). tcpdump is a
-# container-side capture tool for TSN traffic (not a tsn-utils dep, so it
-# stays here rather than in REDUNDANT_TSNUTILS_RDEPENDS).
+# Firmware overlays for both TSN-capable designs. The TSN IP (and the
+# RS-485 PMOD) is present on both the KR260 kr260-tsn-rs485pmod design
+# and the KD240 kd240-motor-ctrl-qei design, so the TSN + RS-485 test
+# suite runs on either board and this one image serves both. Each *-fw
+# recipe pulls its own kernel-module set transitively
+# (uio_pdrv_genirq, mcp251x, motor-control-iio-modules, amd-axi-w1,
+# etc.), so listing the firmware names is enough.
+#
+# pmod-rs485-test - libmodbus RS-485 loopback / sensor self-test.
+#
+# packagegroup-tsn pulls the full TSN runtime (tsn-utils + tsn-examples
+# + gptp/linuxptp/lldpd). tcpdump is a container-side capture tool for
+# TSN traffic (not a tsn-utils dep, so it stays here rather than in
+# REDUNDANT_TSNUTILS_RDEPENDS).
 #
 # ethtool - link/feature introspection used by the TSN bring-up flow.
 #
@@ -118,7 +130,9 @@ REDUNDANT_TSNUTILS_RDEPENDS = " \
 # meta-xilinx-tsn so this no longer depends on the override.
 CONTAINER_APP = " \
     kr260-tsn-rs485pmod-fw \
+    kd240-motor-ctrl-qei-fw \
     packagegroup-tsn \
+    pmod-rs485-test \
     tcpdump \
     ethtool \
     openlldp \
