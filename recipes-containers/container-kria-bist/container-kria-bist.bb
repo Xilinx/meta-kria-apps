@@ -10,10 +10,14 @@ only the firmware names here pulls the full driver stack in."
 
 require recipes-containers/kria-app-container.inc
 
-# Userspace entrypoint is bash for now; switch to the actual BIST CLI
-# once it lands as a script in the kria-bist recipe.
+# Leave the OCI entrypoint empty so the operator runs commands (BIST
+# suite, dfx-fw-install, a shell) explicitly. A non-empty entrypoint
+# ("bash") gets PREPENDED to whatever the user passes, so
+# `docker run <image> sh -c "..."` would become `bash sh -c "..."` and
+# fail with "cannot execute binary file". Matches the foc / tsn
+# containers, which all use an empty CONTAINER_APP_CMD.
 CONTAINER_SHELL = "bash"
-CONTAINER_APP_CMD = "bash"
+CONTAINER_APP_CMD = ""
 
 # Per-board firmware overlays plus the kria-bist test suite. Kernel
 # module dependencies (motor-control-iio-modules, mcp251x, ap1302,
