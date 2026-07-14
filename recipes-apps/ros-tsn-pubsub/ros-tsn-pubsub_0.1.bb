@@ -40,9 +40,13 @@ ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 # start_ros_test.sh drives `ros2 run xlnx-pubsub {talker,listener}`, so the
 # ros2 CLI run verb has to be on the target alongside the executables.
+# ros-workspace ships the top-level ROS 2 environment (/opt/ros/jazzy/
+# setup.bash) that the operator sources before launching the app; it is not
+# pulled in transitively by rclcpp/ros2run, so pull it explicitly here.
 ROS_EXEC_DEPENDS = " \
     rclcpp \
     ros2run \
+    ros-workspace \
     std-msgs \
 "
 
