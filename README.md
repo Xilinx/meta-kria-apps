@@ -44,16 +44,12 @@ This layer depends on the following Yocto / OpenEmbedded layers
 
 The Kernel dependecies for the firmware is explained in [recipes-firmware/module-dependencies.md](recipes-firmware/module-dependencies.md).
 
-## Maintainers / Patches / Submissions
+## Patches / Submissions
 
 Contributions are accepted via pull request against the `rel-v2026.1`
 branch. Please follow the
 [OE community commit-message guidelines](https://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines)
 for subject formatting, body wrapping, sign-off and trailer style.
-
-**Maintainer:**
-
-    Pallav Joshi <pallav.joshi@amd.com>
 
 ## License
 
