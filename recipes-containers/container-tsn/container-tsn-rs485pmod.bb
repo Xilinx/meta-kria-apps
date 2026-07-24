@@ -133,6 +133,11 @@ REDUNDANT_TSNUTILS_RDEPENDS = " \
 # ros-tsn-pubsub - the xlnx-pubsub ROS 2 talker/listener example the TSN
 # demo streams over the Qbv-scheduled link; also pulls the ros2 CLI run
 # verb it is launched with.
+#
+# can-utils - cansend / candump / cangen for the CAN interface test. Both
+# the kr260-tsn-rs485pmod and kd240-motor-ctrl-qei designs expose a CAN
+# link; the CAN self-test drives it with cansend, which is not pulled by
+# packagegroup-tsn.
 CONTAINER_APP = " \
     kr260-tsn-rs485pmod-fw \
     kd240-motor-ctrl-qei-fw \
@@ -142,5 +147,6 @@ CONTAINER_APP = " \
     tcpdump \
     ethtool \
     openlldp \
+    can-utils \
     ${REDUNDANT_TSNUTILS_RDEPENDS} \
 "
