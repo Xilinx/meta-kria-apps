@@ -15,9 +15,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=41bcdd6af856cc34f13217eb319564a3"
 
 SRC_BRANCH = "main"
 SRC_URI = "git://github.com/Xilinx/ros-tsn-pubsub.git;branch=${SRC_BRANCH};protocol=https"
-SRCREV = "29d9cfb22f55a8834d3737073bfa18450bab399c"
+# v0.3 release (commit 898ab27). SRCREV is pinned to the immutable commit
+# for reproducibility; the tag is noted here for readability.
+SRCREV = "898ab27af754b0c9c6c0e1b814c826ce99d5a009"
 
-PV = "0.1.0+git${SRCPV}"
+PV = "0.3.0+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 
