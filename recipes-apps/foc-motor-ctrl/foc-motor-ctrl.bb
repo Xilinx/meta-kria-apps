@@ -4,8 +4,8 @@
 SUMMARY = "Field Oriented Control (FOC) motor-control library, Python binding, CANopen server and Bokeh dashboard"
 DESCRIPTION = "Builds the foc-motor-ctrl library (libfoc_motor_ctrl) and \
 its pybind11 Python binding (py_foc_motor_ctrl), the CANopen-driven motor \
-server (fmc_canopen / start_motor_server) and the Bokeh-based dashboard \
-launcher used on Kria KD240. Each component is split into its own package \
+server (fmc_canopen) and the Bokeh-based dashboard, both started through \
+the start_motor_control launcher, used on Kria KD240. Each component is split into its own package \
 so a downstream image only carries what it actually needs - the BIST \
 container only pulls the lib + python binding, while the full motor \
 server container pulls the lib + server + dashboard."
@@ -15,7 +15,7 @@ SECTION = "apps"
 # kria-motor-control.bb stay in lockstep against the same SRCREV.
 require foc-motor-ctrl-src.inc
 
-PV = "0.5+git${SRCPV}"
+PV = "0.6+git${SRCPV}"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=370aacba9d9e1a362c89a2b36dc0608d"
 
@@ -74,13 +74,15 @@ do_install:append() {
 # -----------------------------------------------------------------------
 # The upstream tree ships four runnable artefacts off the same build:
 #   1. libfoc_motor_ctrl.so  + py_foc_motor_ctrl.cpython-*.so   (lib)
-#   2. start_motor_server / fmc_canopen / foc-mc.eds            (CANopen server)
-#   3. start_motor_dashboard / mc_bokeh.py / launch_dashboard.sh (Bokeh UI)
-#   4. (kria-motor-control ROS2 package - shipped separately)
-# Split (1) from (2) and (3) so consumers (e.g. the BIST container,
-# which only needs the python binding) don't drag in lely-coapp /
-# bokeh / numpy.
-PACKAGES =+ "${PN}-server ${PN}-dashboard"
+#   2. fmc_canopen / foc-mc.eds                                  (CANopen server)
+#   3. dashboard/ (Bokeh app)                                    (Bokeh UI)
+#   4. start_motor_control [--dashboard|--canopen-server]       (launcher for 2 and 3)
+#   5. (kria-motor-control ROS2 package - shipped separately)
+# Split (1) from the rest so consumers (e.g. the BIST container, which
+# only needs the python binding) don't drag in lely-coapp / bokeh /
+# numpy. Since 0.6 one launcher script starts either (2) or (3), so it
+# gets its own package that both of them pull in.
+PACKAGES =+ "${PN}-launcher ${PN}-server ${PN}-dashboard"
 
 FILES:${PN} = " \
     ${libdir}/libfoc_motor_ctrl.so.* \
@@ -94,30 +96,42 @@ RDEPENDS:${PN} = " \
     python3-core \
 "
 
+# start_motor_control checks the firmware with dfx-mgr-client, finds the
+# board IP with `ip -o addr` and clears stale Bokeh servers with
+# killall / fuser.
+FILES:${PN}-launcher = " \
+    ${bindir}/start_motor_control \
+"
+RDEPENDS:${PN}-launcher = " \
+    bash \
+    dfx-mgr-client \
+    iproute2 \
+    psmisc \
+"
+SUMMARY:${PN}-launcher = "start_motor_control launcher for the FOC motor-control server and dashboard"
+
 FILES:${PN}-server = " \
-    ${bindir}/start_motor_server \
     ${bindir}/fmc_canopen \
     ${datadir}/foc-motor-ctrl/foc-mc.eds \
 "
 RDEPENDS:${PN}-server = " \
     ${PN} \
-    bash \
+    ${PN}-launcher \
     liblely-coapp2 \
 "
-SUMMARY:${PN}-server = "FOC motor-control CANopen server (start_motor_server / fmc_canopen)"
+SUMMARY:${PN}-server = "FOC motor-control CANopen server (fmc_canopen, run via start_motor_control --canopen-server)"
 
 FILES:${PN}-dashboard = " \
-    ${bindir}/start_motor_dashboard \
     ${datadir}/foc-motor-ctrl/dashboard \
 "
 RDEPENDS:${PN}-dashboard = " \
     ${PN} \
-    bash \
+    ${PN}-launcher \
     python3-bokeh \
     python3-image \
     python3-numpy \
 "
-SUMMARY:${PN}-dashboard = "Bokeh-based dashboard launcher for the FOC motor-control server"
+SUMMARY:${PN}-dashboard = "Bokeh-based dashboard for the FOC motor-control server (run via start_motor_control --dashboard)"
 
 # pybind11 strips the python module .so during build, which trips Yocto's
 # already-stripped QA check; suppress it for this single package.
