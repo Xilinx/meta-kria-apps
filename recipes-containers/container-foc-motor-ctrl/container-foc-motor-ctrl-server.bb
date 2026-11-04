@@ -5,7 +5,8 @@ SUMMARY = "Kria FOC motor-control server OCI container image"
 DESCRIPTION = "OCI container image targeting Kria KD240, bundling the \
 kd240-motor-ctrl-qei firmware overlay, the IIO motor-control kernel \
 modules, the foc-motor-ctrl CANopen server (fmc_canopen) and the \
-Bokeh-based dashboard, both started with start_motor_control."
+Bokeh-based dashboard, both started with start_motor_control, and the \
+can-utils CLI for operator-side link checks."
 
 require recipes-containers/kria-app-container.inc
 
@@ -30,4 +31,5 @@ CONTAINER_APP = " \
     foc-motor-ctrl-server \
     foc-motor-ctrl-dashboard \
     lmsensors-sensors \
+    can-utils \
 "
