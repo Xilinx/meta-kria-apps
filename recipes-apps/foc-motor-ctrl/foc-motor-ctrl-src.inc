@@ -15,4 +15,5 @@ LICENSE  = "MIT"
 
 SRC_BRANCH = "main"
 SRC_URI = "git://github.com/Xilinx/foc-motor-ctrl.git;branch=${SRC_BRANCH};protocol=https"
-SRCREV  = "18efd3c9e6689281f357193239c358b7a20785a2"
+# v0.6 release (commit 601fc08).
+SRCREV  = "601fc08165438eae8c8853bd6c9efc39020a34ef"

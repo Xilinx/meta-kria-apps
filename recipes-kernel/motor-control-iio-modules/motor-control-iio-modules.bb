@@ -13,8 +13,10 @@ LIC_FILES_CHKSUM = "file://../LICENSE;md5=7d3d4519e1b227873d840232a002e048"
 
 SRC_BRANCH = "main"
 SRC_URI = "git://github.com/Xilinx/motor-control-iio-modules.git;protocol=https;branch=${SRC_BRANCH}"
+# v0.3 release (commit 3900e31). SRCREV is pinned to the immutable commit
+# for reproducibility; the tag is noted here for readability.
 SRCREV = "3900e31dce144199c42a528bbce93ede2946a690"
-PV = "0.2+git${SRCPV}"
+PV = "0.3+git${SRCPV}"
 
 S = "${WORKDIR}/git/src"
 
